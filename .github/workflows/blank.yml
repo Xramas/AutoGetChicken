@@ -5,21 +5,35 @@ on:
     branches:
       - main
   schedule:
-    - cron: '00 16 * * *'  # 北京时间 00:00 (UTC+8)，对应UTC时间 16:00
+    # 将基础调度时间更改为 UTC 00:00，随机延迟将在此基础上进行
+    # 原来的 '00 16 * * *' (北京时间 00:00) 对应 UTC 16:00
+    # 如果你希望随机时间围绕北京时间午夜，可以将 cron 设置为 '16 0 * * *'
+    # 这里我们使用 '0 0 * * *' (UTC 午夜) 作为示例，你可以根据需要调整
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
-  actions: write  # 添加写入Actions变量的权限
+  actions: write # 添加写入Actions变量的权限
 
 jobs:
   run-nodeseek-sign:
     runs-on: ubuntu-latest
 
     steps:
+      - name: 随机延迟执行 # 新增步骤：随机延迟
+        run: |
+          # 设置最大延迟时间（分钟），例如 1440 分钟为 24 小时
+          # 这意味着脚本可能在 cron 触发后的 0 到 24 小时内的任何时间点运行
+          MAX_DELAY_MINUTES=1440
+          # 计算随机的延迟秒数 (1 到 MAX_DELAY_MINUTES * 60 秒之间)
+          DELAY_SECONDS=$(( (RANDOM % (MAX_DELAY_MINUTES * 60)) + 1 ))
+          echo "将休眠 $DELAY_SECONDS 秒 (大约 $(($DELAY_SECONDS / 60)) 分钟)..."
+          sleep $DELAY_SECONDS
+
       - name: 检出代码仓库
         uses: actions/checkout@v3
-      
+
       - name: 配置Python环境
         uses: actions/setup-python@v2
         with:
@@ -34,7 +48,7 @@ jobs:
           # 基本账号
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
-          
+
           # 额外账号1-5
           USER1: ${{ secrets.USER1 }}
           PASS1: ${{ secrets.PASS1 }}
@@ -46,19 +60,19 @@ jobs:
           PASS4: ${{ secrets.PASS4 }}
           USER5: ${{ secrets.USER5 }}
           PASS5: ${{ secrets.PASS5 }}
-          
+
           # Cookie配置
           NS_COOKIE: ${{ vars.NS_COOKIE || secrets.NS_COOKIE }}
-          
+
           # 验证码配置
           SOLVER_TYPE: ${{ secrets.SOLVER_TYPE }}
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           CLIENTT_KEY: ${{ secrets.CLIENTT_KEY }}
-          
+
           # GitHub API配置
           GH_PAT: ${{ secrets.GH_PAT }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          
+
           # 通知推送配置
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_USER_ID: ${{ secrets.TG_USER_ID }}
