@@ -9,7 +9,7 @@ on:
     # 原来的 '00 16 * * *' (北京时间 00:00) 对应 UTC 16:00
     # 如果你希望随机时间围绕北京时间午夜，可以将 cron 设置为 '16 0 * * *'
     # 这里我们使用 '0 0 * * *' (UTC 午夜) 作为示例，你可以根据需要调整
-    - cron: '0 0 * * *'
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions:
@@ -25,7 +25,7 @@ jobs:
         run: |
           # 设置最大延迟时间（分钟），例如 1440 分钟为 24 小时
           # 这意味着脚本可能在 cron 触发后的 0 到 24 小时内的任何时间点运行
-          MAX_DELAY_MINUTES=1440
+          MAX_DELAY_MINUTES=10
           # 计算随机的延迟秒数 (1 到 MAX_DELAY_MINUTES * 60 秒之间)
           DELAY_SECONDS=$(( (RANDOM % (MAX_DELAY_MINUTES * 60)) + 1 ))
           echo "将休眠 $DELAY_SECONDS 秒 (大约 $(($DELAY_SECONDS / 60)) 分钟)..."
