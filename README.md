@@ -184,6 +184,10 @@ PASS3=密码3
 | CloudFreed | 自建服务 | 免费、无次数限制 | 需要自行部署维护 | ★★★★☆ |
 | YesCaptcha | 商业服务 | 稳定可靠、易于配置 | 付费服务（有免费额度） | ★★★★★ |
 
+## 📄 License
+
+Distributed under the [MIT License](LICENSE).
+
 ## ⚠️ 免责声明
 
 本项目仅供学习交流使用，请遵守 NodeSeek 论坛的相关规定和条款。
